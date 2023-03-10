@@ -26,7 +26,7 @@ public class Button {
       width = widthParameter;
       height = heightParameter;
       text = textParameter;
-      isAlive=true;
+      isAlive=false;
       rec= new Rectangle (xpos,ypos,width,height);	//construct a rectangle
    } // constructor
 

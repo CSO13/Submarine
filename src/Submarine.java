@@ -59,6 +59,7 @@ public class Submarine implements MouseListener, MouseMotionListener, KeyListene
     public Image fastPic;
     public Image insidePic;
     public Image oceanPic;
+    public Image beastPic;
  //   public Image cursorPic;
 
     //Mouse position variables
@@ -72,6 +73,7 @@ public class Submarine implements MouseListener, MouseMotionListener, KeyListene
     public Button powerBack;
     public Button hull;
     public Button hullBack;
+    public Cryptid beast;
     public Rock basic;
     public Rock big;
     public Rock fast;
@@ -86,9 +88,14 @@ public class Submarine implements MouseListener, MouseMotionListener, KeyListene
     public long currentTime;
     public long elapsedTime;
 
+    public int debrisCounter = 0;
+    public int bigsCounter = 0;
+    public int swarmCounter = 0;
+
     public boolean startTimer;
     public int timer=0;
     public int counter=0;
+    public int score=0;
 
 
     // Main method definition
@@ -130,18 +137,20 @@ public class Submarine implements MouseListener, MouseMotionListener, KeyListene
         fastPic = Toolkit.getDefaultToolkit().getImage("fast.png");
         fast = new Rock (2,2,2);
 
-        debris = new Rock[20];
+        debris = new Rock[100];
         for(int d=0; d<debris.length; d++){
             debris[d] = new Rock (basic.health,basic.width,basic.height);
         }
-        bigs = new Rock[10];
+        bigs = new Rock[100];
         for(int b=0; b<bigs.length; b++){
             bigs[b] = new Rock (big.health,big.width,big.height);
         }
-        swarm = new Rock[15];
+        swarm = new Rock[75];
         for(int f=0; f<swarm.length; f++){
             swarm[f] = new Rock (fast.health,fast.width,fast.height);
         }
+        beastPic = Toolkit.getDefaultToolkit().getImage("download.png");
+        beast = new Cryptid (1000000000,2,2);
 
 
         oceanPic = Toolkit.getDefaultToolkit().getImage("ocean.png");
@@ -219,8 +228,18 @@ public class Submarine implements MouseListener, MouseMotionListener, KeyListene
                 g.drawImage(fastPic,swarm[f].xpos,swarm[f].ypos,swarm[f].width,swarm[f].height,null);
             }
         }
+        if (beast.isAlive == true){
+            g.drawImage(beastPic, 500-(beast.width/2), 350-(beast.height/2), beast.width, beast.height, null);
+        }
+        if (debrisCounter > 99 && bigsCounter > 99 && swarmCounter > 74) {
+            System.out.println("It awakens");
+            beast.isAlive = true;
+        }
 
         g.drawImage(insidePic,0,0,1000,700,null);
+        //print score to screen
+        g.setColor(Color.WHITE);
+        g.drawString("Score: "+ score,50,50);
 
         //shield
         g.setColor(Color.GRAY);
@@ -253,19 +272,26 @@ public class Submarine implements MouseListener, MouseMotionListener, KeyListene
         g.drawString(hull.text,hull.xpos + 2, hull.ypos + 40);
 
         //gameOver
-        if(gameOver.isAlive = false) {
+        if(beast.height>1400) {
             g.setColor(Color.BLACK);
             g.fillRect(gameOver.xpos, gameOver.ypos, gameOver.width, gameOver.height);
             g.setColor(Color.WHITE);
-            g.drawString(gameOver.text, gameOver.xpos + 500, gameOver.ypos + 350);
+            g.drawString(gameOver.text, gameOver.xpos + 430, gameOver.ypos + 350);
         }
+        else if (hull.width<=0){
+            g.setColor(Color.BLACK);
+            g.fillRect(gameOver.xpos, gameOver.ypos, gameOver.width, gameOver.height);
+            g.setColor(Color.WHITE);
+            g.drawString(gameOver.text, gameOver.xpos + 430, gameOver.ypos + 350);
+        }
+
      //   g.drawImage(cursorPic,cursorX,cursorY,100,100,null);
 
 //        //time
 //        g.drawString(elapsedTime+"",70,340);
         System.out.println(timer);
 //        if(timer==(int)((Math.random()*10)) && counter<debris.length){
-        if(timer==(int)(Math.random()*10) && counter<debris.length){
+        if(timer==(int)(Math.random()*5) && counter<debris.length){
             debris[counter].isAlive=true;
             debris[counter].startX=(int)((Math.random()*688)+156);
             debris[counter].startY=(int)((Math.random()*361)+163);
@@ -273,7 +299,7 @@ public class Submarine implements MouseListener, MouseMotionListener, KeyListene
             counter++;
 
         }
-        if(timer==(int)(Math.random()*20) && counter<bigs.length){
+        if(timer==(int)(Math.random()*7) && counter<bigs.length){
             bigs[counter].isAlive=true;
             bigs[counter].startX=(int)((Math.random()*688)+156);
             bigs[counter].startY=(int)((Math.random()*361)+163);
@@ -281,13 +307,27 @@ public class Submarine implements MouseListener, MouseMotionListener, KeyListene
             counter++;
 
         }
-        if(timer==(int)(Math.random()*5) && counter<swarm.length){
+        if(timer==(int)(Math.random()*4) && counter<swarm.length){
             swarm[counter].isAlive=true;
             swarm[counter].startX=(int)((Math.random()*688)+156);
             swarm[counter].startY=(int)((Math.random()*361)+163);
             timer=0;
             counter++;
 
+        }
+//        if(timer==(int)(Math.random()*7) && counter<debris.length){
+//
+//
+//        }
+//        if(timer==(int)(Math.random()*13) && counter<bigs.length){
+//
+//
+//        }
+//        if(timer==(int)(Math.random()*5) && counter<swarm.length){
+//
+//        }
+        if(timer==8){
+            timer=0;
         }
 
 
@@ -326,6 +366,7 @@ public class Submarine implements MouseListener, MouseMotionListener, KeyListene
         for(int f=0; f<swarm.length; f++){
             swarm[f].move();
         }
+        beast.move();
     }
     public void collision(){
         if (basic.height>=450 && basic.isAlive==true && shield.isAlive==false){
@@ -489,9 +530,11 @@ public class Submarine implements MouseListener, MouseMotionListener, KeyListene
             System.out.println("basic.isAlive =" + basic.isAlive);
         }
         for(int d=0; d<debris.length; d++) {
-            if (debris[d].health == 0) {
+            if (debris[d].health == 0 && debris[d].isScored==false) {
                 debris[d].isAlive = false;
-                System.out.println(debris[d] + "isAlive =" + debris[d].isAlive);
+                debrisCounter +=1;
+                score=score+10;
+                debris[d].isScored = true;
             }
         }
         if (big.health==0){
@@ -499,15 +542,19 @@ public class Submarine implements MouseListener, MouseMotionListener, KeyListene
             System.out.println("big.isAlive =" + big.isAlive);
         }
         for(int b=0; b<bigs.length; b++) {
-            if (bigs[b].health==0){
+            if (bigs[b].health==0 && bigs[b].isScored==false){
                 bigs[b].isAlive=false;
-                System.out.println("big.isAlive =" + big.isAlive);
+                bigsCounter +=1;
+                score=score+15;
+                bigs[b].isScored = true;
             }
         }
         for(int f=0; f<swarm.length; f++){
-            if (swarm[f].health==0){{
+            if (swarm[f].health==0 && swarm[f].isScored==false){{
             swarm[f].isAlive=false;
-            System.out.println("swarm.isAlive =" + swarm[f].isAlive);
+            swarmCounter +=1;
+            score=score+5;
+            swarm[f].isScored = true;
             }
             }
         }

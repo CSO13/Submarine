@@ -1,6 +1,6 @@
 import java.awt.*;
 
-public class Rock {
+public class Cryptid {
     public int xpos;				//the x position
     public int ypos;				//the y position
     public int startX;
@@ -12,7 +12,7 @@ public class Rock {
     public Rectangle rec;
     public boolean isScored;
 
-    public Rock (int xParameter, int yParameter, int healthParameter, int widthParameter, int heightParameter){
+    public Cryptid (int xParameter, int yParameter, int healthParameter, int widthParameter, int heightParameter){
         xpos = xParameter;
         ypos = yParameter;
         health = healthParameter;
@@ -21,7 +21,7 @@ public class Rock {
         isAlive=true;
         rec= new Rectangle (500-(width/2),350-(height/2),width,height);	//construct a rectangle
     }
-    public Rock (int healthParameter, int widthParameter, int heightParameter){
+    public Cryptid (int healthParameter, int widthParameter, int heightParameter){
         startX = (int)((Math.random()*688)+156);
         startX=-1000;
         startY = (int)((Math.random()*361)+163);
@@ -36,8 +36,8 @@ public class Rock {
     }
     public void move(){
         if (isAlive == true) {
-            height = height + 10;
-            width = width + 10;
+            height = height + 30;
+            width = width + 30;
         }
         xpos = startX-(width/2);
         ypos = startY-(height/2);
@@ -46,3 +46,4 @@ public class Rock {
     }
 
 }
+
